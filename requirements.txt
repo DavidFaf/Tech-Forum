@@ -1,0 +1,4 @@
+django
+djangorestframework
+drf-writable-nested
+djangorestframework-simplejwt
