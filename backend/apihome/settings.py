@@ -44,6 +44,9 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'algoliasearch_django',
+    
 
 ]
 
@@ -144,4 +147,11 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=5), 
 }
+
+ALGOLIA = {
+    'APPLICATION_ID': 'A2VSEA6HSR',
+    'API_KEY': '6a6d985471dda823be818c77dc74e8d0',
+    'INDEX_PREFIX': 'bigfafs'
+}
+
 

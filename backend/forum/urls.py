@@ -9,6 +9,7 @@ urlpatterns = [
     path('posts/<int:pk>/delete/', views.PostDestroyApiView.as_view()),
     path('posts/<int:pk>/', views.PostReteiveApiView.as_view()),
     path('posts/<int:pk>/upvote/', views.UpvoteCreateApiView.as_view()),
+    path('posts/<int:pk>/remove-upvote/', views.UpvoteDestroyApiView.as_view()),
     path('posts/<int:pk>/liked-by/', views.LikedUsersAPIView.as_view()),
 
     # Comments urls
@@ -17,6 +18,11 @@ urlpatterns = [
     path('comments/<int:pk>/destroy/', views.CommentDestroyApiView.as_view()),
     path('comments/<int:pk>/upvote/', views.LikeCommentApiView.as_view(), name='like-comment'),
     path('comments/<int:pk>/liked-by/', views.CommentLikedBy.as_view()),
+
+    path('user/', views.CreateUserView.as_view()),
+
+    path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+
 
     
 ]

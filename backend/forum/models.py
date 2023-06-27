@@ -56,7 +56,12 @@ class Post(models.Model):
     comments = models.ManyToManyField(Comment, related_name='post_comments', blank=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    def comment_text(self):
+        return [str(comments) for comments in self.comments.all()]
 
+    def tag_names(self):
+        return [str(tags) for tags in self.tags.all()]
+    
     def __str__(self):
         return self.title
 

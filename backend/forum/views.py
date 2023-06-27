@@ -6,9 +6,13 @@ from .serializers import (
     UpvoteSerializer, 
     CommentsSerializer,
     CommentLikeSerializer,
-    UserDetailSerializer)
-from rest_framework.permissions import IsAuthenticated
+    UserDetailSerializer,
+    UserSerializer,
+    ChangePasswordSerializer,
+    )
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -76,6 +80,30 @@ class UpvoteCreateApiView(generics.UpdateAPIView):
 
         return Response({'message': 'Post liked successfully.'}, status=status.HTTP_200_OK)
     
+class UpvoteDestroyApiView(generics.UpdateAPIView):
+
+    queryset = Post.objects.all()
+    serializer_class = UpvoteSerializer
+
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        post = self.get_object()
+        id = self.kwargs.get('id')
+
+        # if Upvote.objects.filter(post=post, user=self.request.user).exists():
+        #     return Response({"message":"You have liked this post before"})
+
+        if post.likes >=0:
+            post.likes -= 1 
+            post.liked_by.remove(self.request.user)
+            post.save()
+
+        # Upvote.objects.create(post=post, user=self.request.user)
+     
+
+        return Response({'message': 'Post unliked successfully.'}, status=status.HTTP_200_OK)
+    
 
 class LikeCommentApiView(generics.UpdateAPIView):
     queryset = Comment.objects.all()
@@ -137,3 +165,31 @@ class LikedUsersAPIView(generics.ListAPIView):
                 post = queryset.first()
                 return post.liked_by.all()
             return Response({"message":"Post doesn't exist"})
+
+
+class CreateUserView(generics.ListCreateAPIView):
+    model = User
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+class ChangePasswordView(APIView):
+    def put(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            old_password = serializer.validated_data.get('old_password')
+            new_password = serializer.validated_data.get('new_password')
+            confirm_password = serializer.validated_data.get('confirm_password')
+
+            if not user.check_password(old_password):
+                return Response({"message": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if new_password != confirm_password:
+                return Response({"message": "New password and confirm password do not match"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
