@@ -8,7 +8,10 @@ class YourModelIndex(AlgoliaIndex):
     fields = [
         'author',
         'title',
-        'tag_names',
         'body',
         'comment_text',
     ]
+    tags = 'tag_names'
+    settings = {
+        'attributesForFaceting' : ['author']
+    }
