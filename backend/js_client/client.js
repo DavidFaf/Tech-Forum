@@ -1,5 +1,7 @@
 const contentContainer = document.getElementById('content-container')
 const loginForm = document.getElementById('login-form')
+const likePost = document.getElementById('like-post')
+
 const baseEndpoint = "http://localhost:8080/api"
 
 if(loginForm) {
@@ -20,6 +22,8 @@ function handleLogin(event){
         },
         body: loginDetails
     }
+
+
 
 function fetchOptions(method, jsObject){
     return{
@@ -53,6 +57,7 @@ function fetchAuthData(authData, callback){
         callback()
     }
     }
+
 
 function writeToContainer(data){
     if (contentContainer){

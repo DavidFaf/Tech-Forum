@@ -11,13 +11,25 @@ class CommentsSerializer(serializers.ModelSerializer):
     post_commented=serializers.CharField(source="post_commented.title", read_only=True)
     user = serializers.CharField(source="user.username", read_only=True)
     liked_by = serializers.SerializerMethodField()
+    replied_to = serializers.SerializerMethodField()
+    # replies = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'post_commented', 'likes' , 'liked_by' , 'text', 'parent', 'created_at']
+        fields = ['id', 'user', 'post_commented', 'likes' , 'liked_by' , 'text', 'parent', 'created_at', 'replied_to']
 
     def get_liked_by(self, obj):
         return [user.username for user in obj.liked_by.all()]
+    
+    def get_replied_to(self, obj):
+        return obj.replied_to
+    
+    def get_replies(self, obj):
+        replies = obj.get_replies()
+        serializer = CommentsSerializer(replies, many=True)
+        return serializer.data
+        
         
 
 class TagSerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
@@ -64,9 +76,15 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['username', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.set_password(validated_data['password'])
+        return user
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
     confirm_password = serializers.CharField(required=True)
+

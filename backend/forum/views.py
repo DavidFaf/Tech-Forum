@@ -62,14 +62,12 @@ class UpvoteCreateApiView(generics.UpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = UpvoteSerializer
 
-    permission_classes = [IsAuthenticated]
-
     def patch(self, request, *args, **kwargs):
         post = self.get_object()
         id = self.kwargs.get('id')
 
         if Upvote.objects.filter(post=post, user=self.request.user).exists():
-            return Response({"message":"You have liked this post before"})
+            return Response({"message":"You have liked this post before"}, status=status.HTTP_200_OK)
 
         post.likes += 1 
         post.liked_by.add(self.request.user)
@@ -78,7 +76,7 @@ class UpvoteCreateApiView(generics.UpdateAPIView):
         Upvote.objects.create(post=post, user=self.request.user)
      
 
-        return Response({'message': 'Post liked successfully.'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Post liked successfully.'}, status=status.HTTP_201_CREATED)
     
 class UpvoteDestroyApiView(generics.UpdateAPIView):
 
@@ -168,10 +166,10 @@ class LikedUsersAPIView(generics.ListAPIView):
 
 
 class CreateUserView(generics.ListCreateAPIView):
-    model = User
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+    
 
 class ChangePasswordView(APIView):
     def put(self, request, *args, **kwargs):

@@ -56,7 +56,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -70,8 +69,9 @@ CORS_ALLOWED_ORIGINS = []
 if DEBUG:
     CORS_ALLOWED_ORIGINS += [
     "http://localhost:8111",
-    "https://localhost:8111"
-
+    "https://localhost:8111",
+    "http://localhost:3001",
+    "https://localhost:3001"
 ]
 
 CORS_URLS_REGEX = r"^/api/.*$"
@@ -151,6 +151,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10

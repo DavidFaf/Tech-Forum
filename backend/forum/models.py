@@ -27,8 +27,19 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.text
+        if self.parent is None:
+            return self.text  # Original post
+        else:
+            return f"{self.text} (Reply to {self.parent.user.username})"
     
+    @property
+    def replied_to(self):
+        if self.parent is not None:
+             return self.parent.user.username
+        
+    def get_replies(self):
+        return Comment.objects.filter(parent=self).order_by('created_at')
+           
     
 class CommentLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -49,7 +60,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
     title = models.CharField(max_length=120, blank=False, null=False)
     tags = models.ManyToManyField(Tag)
-    body = models.TextField(max_length=150, blank=False, null=False)
+    body = models.TextField(blank=False, null=False)
     views = models.PositiveIntegerField(default=0)
     likes = models.PositiveIntegerField(default=0)
     liked_by = models.ManyToManyField(User, related_name='liked_posts', blank=True ,default=None)
